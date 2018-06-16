@@ -1,7 +1,7 @@
 'use strict';
 
 var OFFER_TITLES = ['Большая уютная квартира', 'Маленькая неуютная квартира', 'Огромный прекрасный дворец', 'Маленький ужасный дворец', 'Красивый гостевой домик', 'Некрасивый негостеприимный домик', 'Уютное бунгало далеко от моря', 'Неуютное бунгало по колено в воде'];
-var OFFER_TYPES = ['flat', 'house', 'bungalo','palace'];
+var OFFER_TYPES = ['flat', 'house', 'bungalo', 'palace'];
 var CHECK = ['12:00', '13:00', '14:00'];
 var MIN_PRICE = 1000;
 var MAX_PRICE = 1000000;
@@ -112,7 +112,11 @@ var createOneOffer = function (house) {
   newOffer.querySelector('.popup__text--capacity').textContent = offer.rooms + ' комнаты для ' + offer.guests + ' гостей.';
   newOffer.querySelector('.popup__text--time').textContent = 'Заезд после' + offer.checkin + ', выезд до ' + offer.checkout;
   newOffer.querySelector('.popup__description').textContent = offer.description;
-  
+  var housefeatures = offer.features;
+  var allFeatures = newOffer.querySelector('.popup__features').children;
+  for (var i = 0; i < housefeatures.length; i++) {
+    allFeatures[i].className = 'popup__feature popup__feature--' + housefeatures[i];
+  }
   var housePhotos = offer.photos;
   var photos = newOffer.querySelector('.popup__photos');
   for (var i = 0; i < housePhotos.length; i++) {
