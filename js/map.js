@@ -119,7 +119,7 @@ var createOneOffer = function (house) {
   }
   var housePhotos = offer.photos;
   var photos = newOffer.querySelector('.popup__photos');
-  for (var i = 0; i < housePhotos.length; i++) {
+  for (i = 0; i < housePhotos.length; i++) {
     var newPicture = photos.firstChild.cloneNode(true);
     newPicture.src = housePhotos[i];
     photos.appendChild(newPicture);
