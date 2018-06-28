@@ -1,5 +1,4 @@
 'use strict';
-
 var OFFER_TITLES = ['Большая уютная квартира', 'Маленькая неуютная квартира', 'Огромный прекрасный дворец', 'Маленький ужасный дворец', 'Красивый гостевой домик', 'Некрасивый негостеприимный домик', 'Уютное бунгало далеко от моря', 'Неуютное бунгало по колено в воде'];
 var OFFER_TYPES = ['flat', 'house', 'bungalo', 'palace'];
 var CHECK = ['12:00', '13:00', '14:00'];
@@ -12,26 +11,28 @@ var MIN_X = 300;
 var MAX_X = 900;
 var MIN_Y = 130;
 var MAX_Y = 630;
+var X0 = 570;
+var Y0 = 375;
 var IMAGE_RADIUS = 20;
 var PIN_WIDTH = 50;
 var PIN_HEIGHT = 70;
 var FLAT_FEATURES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
 var FLAT_PHOTOS = ['http://o0.github.io/assets/images/tokyo/hotel1.jpg', 'http://o0.github.io/assets/images/tokyo/hotel2.jpg', 'http://o0.github.io/assets/images/tokyo/hotel3.jpg'];
 var OFFER_AMOUNT = 8; // кол-во предложений
-// массив
-var flatOffers = [];
+
 // получить случайный элемент из массива
 var getRandomEl = function (flatAttributes) {
   return flatAttributes[Math.trunc(Math.random() * flatAttributes.length)];
 };
 // заполняем массив случайными данными
 var createOffers = function () {
+  var flats = [];
   var flatX;
   var flatY;
   for (var i = 0; i < OFFER_AMOUNT; i++) {
     flatX = Math.round(Math.random() * (MAX_X - MIN_X)) + MIN_X;
     flatY = Math.round(Math.random() * (MAX_Y - MIN_Y)) + MIN_Y;
-    flatOffers.push({
+    flats.push({
       'author': {'avatar': 'img/avatars/user0' + (i + 1) + '.png'},
       'offer': {
         'title': getRandomEl(OFFER_TITLES),
@@ -44,7 +45,9 @@ var createOffers = function () {
         'checkout': getRandomEl(CHECK),
         'features': FLAT_FEATURES,
         'description': '',
-        'photos': FLAT_PHOTOS
+        'photos': FLAT_PHOTOS.sort(function () {
+          return Math.random() - 0.5;
+        })
       },
       'location': {
         'x': flatX,
@@ -52,20 +55,18 @@ var createOffers = function () {
       }
     });
   }
+  return flats;
 };
 
-createOffers();
-// показать окно
-var userDialog = document.querySelector('.map');
-userDialog.classList.remove('.map--faded');
 // создание метки
-var createOnePin = function (house) {
+var createOnePin = function (number) {
   var newPin = document.createElement('button');
   newPin.className = 'map__pin';
+  var house = flatOffers[number];
   newPin.alt = house.offer.title;
   newPin.style.left = house.location.x - PIN_WIDTH / 2 + 'px';
   newPin.style.top = house.location.y - PIN_HEIGHT + 'px';
-
+  newPin.setAttribute('data-number', number);
   var newPinImg = document.createElement('img');
   newPinImg.width = 2 * IMAGE_RADIUS;
   newPinImg.height = 2 * IMAGE_RADIUS;
@@ -75,14 +76,20 @@ var createOnePin = function (house) {
   newPin.appendChild(newPinImg);
   return newPin;
 };
+
 // отрисовываем метки
 var insertMapPins = function () {
-  var mapPins = userDialog.querySelector('.map__pins');
+  var mapPins = map.querySelector('.map__pins');
   for (var i = 0; i < OFFER_AMOUNT; i++) {
-    mapPins.appendChild(createOnePin(flatOffers[i]));
+    mapPins.appendChild(createOnePin(i));
   }
+  mapPins.addEventListener('click', function (evt) {
+    var target = evt.target;
+    if (target.className === 'map__pin') {
+      insertOffer(target.getAttribute('data-number'));
+    }
+  });
 };
-insertMapPins();
 
 // создаем объявление
 var createOneOffer = function (house) {
@@ -129,8 +136,25 @@ var createOneOffer = function (house) {
 
 var insertOffer = function (currentOffer) {
   var fragment = document.createDocumentFragment();
-  fragment.appendChild(createOneOffer(currentOffer));
-  userDialog.insertBefore(fragment, document.querySelector('.map__filters-container'));
+  fragment.appendChild(createOneOffer(flatOffers[currentOffer]));
+  map.insertBefore(fragment, document.querySelector('.map__filters-container'));
+};
+// блокировка формы
+var disabledForm = function (isDisabled) {
+  for (var i = 0; i < fieldsets.length; i++) {
+    fieldsets[i].disabled = isDisabled;
+  }
 };
 
-insertOffer(flatOffers[0]);
+var flatOffers = createOffers();
+var map = document.querySelector('.map');
+var address = document.getElementById('address');
+var fieldsets = document.querySelector('.ad-form').getElementsByTagName('fieldset');
+var mainPin = document.querySelector('.map__pin--main');
+
+mainPin.addEventListener('mouseup', function () {
+  disabledForm(false);
+  map.classList.remove('.map--faded');
+  address.value = X0 + ', ' + Y0;
+  insertMapPins();
+});
