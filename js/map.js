@@ -5,6 +5,7 @@ var CHECK = ['12:00', '13:00', '14:00'];
 var MIN_PRICE = 1000;
 var MAX_PRICE = 1000000;
 var MAX_GUESTS = 5;
+var MIN_GUESTS = 0;
 var MIN_ROOMS = 1;
 var MAX_ROOMS = 5;
 var MIN_X = 300;
@@ -151,10 +152,54 @@ var map = document.querySelector('.map');
 var address = document.getElementById('address');
 var fieldsets = document.querySelector('.ad-form').getElementsByTagName('fieldset');
 var mainPin = document.querySelector('.map__pin--main');
+var adForm = document.querySelector('.ad-form');
+var rooms = document.getElementById('room_number');
+var capacity = document.getElementById('capacity');
+var timein = document.getElementById('timein');
+var timeout = document.getElementById('timeout');
+var houseType = document.getElementById('type');
+var price = document.getElementById('price');
 
 mainPin.addEventListener('mouseup', function () {
   disabledForm(false);
+  adForm.classList.remove('ad-form--disabled');
   map.classList.remove('.map--faded');
   address.value = X0 + ', ' + Y0;
   insertMapPins();
+});
+
+// синхронизация цены и типа жилья
+houseType.addEventListener('change', function () {
+  switch (houseType.selectedIndex.value) {
+    case 'bungalo':
+      price.min = 0;
+      break;
+    case 'flat':
+      price.min = 1000;
+      break;
+    case 'house':
+      price.min = 5000;
+      break;
+    case 'palace':
+      price.min = 10000;
+      break;
+  }
+});
+// синхронизация заезда и отъезда
+timein.addEventListener('change', function () {
+  timeout.selectedIndex = timein.selectedIndex;
+});
+timeout.addEventListener('change', function () {
+  timein.selectedIndex = timeout.selectedIndex;
+});
+adForm.addEventListener('submit', function (evt) {
+  evt.preventDefault();
+  var selectedRooms = rooms.selectedIndex.value;
+  var selectedGuests = capacity.selectedIndex.value;
+  var isCapacityEnough = (selectedRooms < selectedGuests) || ((selectedGuests === MIN_GUESTS) && (selectedRooms > 0));
+  if (isCapacityEnough) {
+    rooms.setCustomValidity('Извините, число комнат должно соответствовать числу гостей');
+  } else {
+    rooms.setCustomValidity('');
+  }
 });
