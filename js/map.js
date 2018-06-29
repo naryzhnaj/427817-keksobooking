@@ -1,63 +1,11 @@
 'use strict';
-var OFFER_TITLES = ['Большая уютная квартира', 'Маленькая неуютная квартира', 'Огромный прекрасный дворец', 'Маленький ужасный дворец', 'Красивый гостевой домик', 'Некрасивый негостеприимный домик', 'Уютное бунгало далеко от моря', 'Неуютное бунгало по колено в воде'];
-var OFFER_TYPES = ['flat', 'house', 'bungalo', 'palace'];
-var CHECK = ['12:00', '13:00', '14:00'];
-var MIN_PRICE = 1000;
-var MAX_PRICE = 1000000;
-var MAX_GUESTS = 5;
-var MIN_GUESTS = 0;
-var MIN_ROOMS = 1;
-var MAX_ROOMS = 5;
 var MIN_X = 300;
 var MAX_X = 900;
 var MIN_Y = 130;
 var MAX_Y = 630;
-var X0 = 570;
-var Y0 = 375;
 var IMAGE_RADIUS = 20;
 var PIN_WIDTH = 50;
 var PIN_HEIGHT = 70;
-var FLAT_FEATURES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
-var FLAT_PHOTOS = ['http://o0.github.io/assets/images/tokyo/hotel1.jpg', 'http://o0.github.io/assets/images/tokyo/hotel2.jpg', 'http://o0.github.io/assets/images/tokyo/hotel3.jpg'];
-var OFFER_AMOUNT = 8; // кол-во предложений
-
-// получить случайный элемент из массива
-var getRandomEl = function (flatAttributes) {
-  return flatAttributes[Math.trunc(Math.random() * flatAttributes.length)];
-};
-// заполняем массив случайными данными
-var createOffers = function () {
-  var flats = [];
-  var flatX;
-  var flatY;
-  for (var i = 0; i < OFFER_AMOUNT; i++) {
-    flatX = Math.round(Math.random() * (MAX_X - MIN_X)) + MIN_X;
-    flatY = Math.round(Math.random() * (MAX_Y - MIN_Y)) + MIN_Y;
-    flats.push({
-      'author': {'avatar': 'img/avatars/user0' + (i + 1) + '.png'},
-      'offer': {
-        'title': getRandomEl(OFFER_TITLES),
-        'address': flatX + ', ' + flatY,
-        'price': MIN_PRICE + Math.round(Math.random() * (MAX_PRICE - MIN_PRICE)),
-        'type': getRandomEl(OFFER_TYPES),
-        'rooms': Math.round(Math.random() * (MAX_ROOMS - MIN_ROOMS)) + MIN_ROOMS,
-        'guests': Math.round(Math.random() * MAX_GUESTS),
-        'checkin': getRandomEl(CHECK),
-        'checkout': getRandomEl(CHECK),
-        'features': FLAT_FEATURES,
-        'description': '',
-        'photos': FLAT_PHOTOS.sort(function () {
-          return Math.random() - 0.5;
-        })
-      },
-      'location': {
-        'x': flatX,
-        'y': flatY,
-      }
-    });
-  }
-  return flats;
-};
 
 // создание метки
 var createOnePin = function (number) {
@@ -81,7 +29,7 @@ var createOnePin = function (number) {
 // отрисовываем метки
 var insertMapPins = function () {
   var mapPins = map.querySelector('.map__pins');
-  for (var i = 0; i < OFFER_AMOUNT; i++) {
+  for (var i = 0; i < flatOffers.length; i++) {
     mapPins.appendChild(createOnePin(i));
   }
   mapPins.addEventListener('click', function (evt) {
@@ -127,8 +75,9 @@ var createOneOffer = function (house) {
   }
   var housePhotos = offer.photos;
   var photos = newOffer.querySelector('.popup__photos');
-  for (i = 0; i < housePhotos.length; i++) {
-    var newPicture = photos.firstChild.cloneNode(true);
+  photos.firstElementChild.src = housePhotos[0];
+  for (i = 1; i < housePhotos.length; i++) {
+    var newPicture = photos.firstElementChild.cloneNode(true);
     newPicture.src = housePhotos[i];
     photos.appendChild(newPicture);
   }
@@ -142,64 +91,29 @@ var insertOffer = function (currentOffer) {
 };
 // блокировка формы
 var disabledForm = function (isDisabled) {
+  if (!isDisabled) {
+    adForm.classList.remove('ad-form--disabled');
+  }
   for (var i = 0; i < fieldsets.length; i++) {
     fieldsets[i].disabled = isDisabled;
   }
 };
 
-var flatOffers = createOffers();
+var flatOffers = window.createOffers();
 var map = document.querySelector('.map');
 var address = document.getElementById('address');
-var fieldsets = document.querySelector('.ad-form').getElementsByTagName('fieldset');
 var mainPin = document.querySelector('.map__pin--main');
 var adForm = document.querySelector('.ad-form');
-var rooms = document.getElementById('room_number');
-var capacity = document.getElementById('capacity');
-var timein = document.getElementById('timein');
-var timeout = document.getElementById('timeout');
-var houseType = document.getElementById('type');
-var price = document.getElementById('price');
+var fieldsets = adForm.getElementsByTagName('fieldset');
+var x0 = 570;
+var y0 = 375;
+address.value = x0 + ', ' + y0;
+//address.value = mainPin.style.left + ', ' + mainPin.style.top;
 
 mainPin.addEventListener('mouseup', function () {
   disabledForm(false);
-  adForm.classList.remove('ad-form--disabled');
+//  address.value = mainPin.style.left + ', ' + mainPin.style.top;
+  window.openForm();
   map.classList.remove('.map--faded');
-  address.value = X0 + ', ' + Y0;
   insertMapPins();
-});
-
-// синхронизация цены и типа жилья
-houseType.addEventListener('change', function () {
-  switch (houseType.selectedIndex.value) {
-    case 'bungalo':
-      price.min = 0;
-      break;
-    case 'flat':
-      price.min = 1000;
-      break;
-    case 'house':
-      price.min = 5000;
-      break;
-    case 'palace':
-      price.min = 10000;
-      break;
-  }
-});
-// синхронизация заезда и отъезда
-timein.addEventListener('change', function () {
-  timeout.selectedIndex = timein.selectedIndex;
-});
-timeout.addEventListener('change', function () {
-  timein.selectedIndex = timeout.selectedIndex;
-});
-adForm.addEventListener('submit', function (evt) {
-  evt.preventDefault();
-  var selectedRooms = rooms.selectedIndex.value;
-  var selectedGuests = capacity.selectedIndex.value;
-  var isCapacityEnough = (selectedRooms < selectedGuests) || ((selectedGuests === MIN_GUESTS) && (selectedRooms > 0));
-  if (isCapacityEnough) {
-    rooms.setCustomValidity('Извините, число комнат должно соответствовать числу гостей');
-  } else {
-    rooms.setCustomValidity('');
-  }
 });
