@@ -1,7 +1,5 @@
 'use strict';
 (function () {
-  var X0 = 570;
-  var Y0 = 375;
   var MIN_GUESTS = 0;
 
   var map = document.querySelector('.map');
@@ -14,18 +12,16 @@
   var houseType = document.getElementById('type');
   var price = document.getElementById('price');
   var success = document.querySelector('.success');
-  var mainPin = document.querySelector('.map__pin--main');
 
   window.initialStage = function (isDisabled) {
     if (isDisabled) {
       adForm.classList.add('ad-form--disabled');
-      map.classList.add('.map--faded');
-      document.getElementById('address').value = X0 + ', ' + Y0;
-      mainPin.style.top = Y0 + 'px';
-      mainPin.style.left = X0 + 'px';
+      map.classList.add('map--faded');
+      window.activeStage = false;
     } else {
       adForm.classList.remove('ad-form--disabled');
-      map.classList.remove('.map--faded');
+      map.classList.remove('map--faded');
+      openForm();
     }
 
     for (var i = 0; i < fieldsets.length; i++) {
@@ -33,7 +29,7 @@
     }
   };
 
-  window.openForm = function () {
+  var openForm = function () {
     // синхронизация цены и типа жилья
     houseType.addEventListener('change', function () {
       switch (houseType.selectedIndex.value) {
@@ -73,17 +69,19 @@
         rooms.setCustomValidity('');
 
         success.classList.remove('hidden');
-        window.initialStage(true);
+        adForm.reset();
 
-        document.addEventListener('click', function () {
-          success.classList.add('hidden');
-        });
+        document.addEventListener('click', closeSuccess);
       }
     });
 
     adForm.addEventListener('reset', function () {
       window.initialStage(true);
     });
+  };
 
+  var closeSuccess = function () {
+    success.classList.add('hidden');
+    document.removeEventListener('click', closeSuccess);
   };
 })();
