@@ -1,6 +1,9 @@
 'use strict';
 (function () {
   var MIN_GUESTS = 0;
+  var startPoint = {
+    X: 570,
+    Y: 375};
 
   var map = document.querySelector('.map');
   var adForm = document.querySelector('.ad-form');
@@ -12,12 +15,19 @@
   var houseType = document.getElementById('type');
   var price = document.getElementById('price');
   var success = document.querySelector('.success');
+  var mapPin = document.querySelector('.map__pin--main');
 
+  // Переключение состояний карты
   window.initialStage = function (isDisabled) {
     if (isDisabled) {
       adForm.classList.add('ad-form--disabled');
       map.classList.add('map--faded');
+
       window.activeStage = false;
+
+      document.getElementById('address').value = startPoint.X + ', ' + startPoint.Y;
+      mapPin.style.top = startPoint.Y + 'px';
+      mapPin.style.left = startPoint.X + 'px';
     } else {
       adForm.classList.remove('ad-form--disabled');
       map.classList.remove('map--faded');
@@ -64,14 +74,17 @@
       var isCapacityEnough = (selectedRooms < selectedGuests) || ((selectedGuests === MIN_GUESTS) && (selectedRooms > 0));
 
       if (isCapacityEnough) {
+        rooms.validity.valid = false;
+        rooms.validity.customError = true;
         rooms.setCustomValidity('Извините, число комнат должно соответствовать числу гостей');
       } else {
-        rooms.setCustomValidity('');
+        rooms.validity.valid = true;
+        window.upload(new FormData(adForm), function () {
+          success.classList.remove('hidden');
+          adForm.reset();
 
-        success.classList.remove('hidden');
-        adForm.reset();
-
-        document.addEventListener('click', closeSuccess);
+          document.addEventListener('click', closeSuccess);
+        }, window.errorMessage);
       }
     });
 

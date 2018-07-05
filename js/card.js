@@ -30,27 +30,31 @@
     newOffer.querySelector('.popup__text--time').textContent = 'Заезд после' + offer.checkin + ', выезд до ' + offer.checkout;
     newOffer.querySelector('.popup__description').textContent = offer.description;
 
-    var housefeatures = offer.features;
     var allFeatures = newOffer.querySelector('.popup__features').children;
-    for (var i = 0; i < housefeatures.length; i++) {
-      allFeatures[i].className = 'popup__feature popup__feature--' + housefeatures[i];
-    }
+    offer.features.forEach(function (housefeature, i) {
+      allFeatures[i].className = 'popup__feature popup__feature--' + housefeature;
+    });
 
     var housePhotos = offer.photos;
     var photos = newOffer.querySelector('.popup__photos');
     photos.firstElementChild.src = housePhotos[0];
-    for (i = 1; i < housePhotos.length; i++) {
+    for (var i = 1; i < housePhotos.length; i++) {
       var newPicture = photos.firstElementChild.cloneNode(true);
       newPicture.src = housePhotos[i];
       photos.appendChild(newPicture);
     }
+    newOffer.querySelector('.popup__close').addEventListener('click', function () {
+      newOffer.parentNode.removeChild(newOffer);
+    });
     return newOffer;
   };
 
+  // вставка объявления
   window.insertOffer = function (currentOffer) {
     var fragment = document.createDocumentFragment();
     var newCard = createOneOffer(currentOffer);
     fragment.appendChild(newCard);
+
     document.querySelector('.map').insertBefore(fragment, document.querySelector('.map__filters-container'));
   };
 })();
