@@ -78,7 +78,6 @@
         rooms.validity.customError = true;
         rooms.setCustomValidity('Извините, число комнат должно соответствовать числу гостей');
       } else {
-        rooms.validity.valid = true;
         window.upload(new FormData(adForm), function () {
           success.classList.remove('hidden');
           adForm.reset();

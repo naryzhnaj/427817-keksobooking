@@ -43,17 +43,13 @@
       newPicture.src = housePhotos[i];
       photos.appendChild(newPicture);
     }
-    newOffer.querySelector('.popup__close').addEventListener('click', function () {
-      newOffer.parentNode.removeChild(newOffer);
-    });
     return newOffer;
   };
 
   // вставка объявления
   window.insertOffer = function (currentOffer) {
     var fragment = document.createDocumentFragment();
-    var newCard = createOneOffer(currentOffer);
-    fragment.appendChild(newCard);
+    fragment.appendChild(createOneOffer(currentOffer));
 
     document.querySelector('.map').insertBefore(fragment, document.querySelector('.map__filters-container'));
   };

@@ -9,6 +9,7 @@
   var PinSize = {RADIUS: 25,
     HEIGHT: 70};
 
+  var map = document.querySelector('.map');
   var mapPins = document.querySelector('.map__pins');
   var mainPin = document.querySelector('.map__pin--main');
   var address = document.getElementById('address');
@@ -39,23 +40,8 @@
       y: moveEvt.clientY
     };
 
-    var x = mainPin.offsetLeft - shift.x;
-    var y = mainPin.offsetTop - shift.y + PinSize.HEIGHT;
-    if (x < Range.MIN_X) {
-      x = Range.MIN_X;
-    }
-    if (x > Range.MAX_X) {
-      x = Range.MAX_X;
-    }
-    if (y < Range.MIN_Y) {
-      y = Range.MIN_Y;
-    }
-    if (y > Range.MAX_Y) {
-      y = Range.MAX_Y;
-    }
-
-    mainPin.style.top = (y - PinSize.HEIGHT) + 'px';
-    mainPin.style.left = (x - PinSize.RADIUS) + 'px';
+    mainPin.style.top = (mainPin.offsetTop - shift.y) + 'px';
+    mainPin.style.left = (mainPin.offsetLeft - shift.x - PinSize.RADIUS) + 'px';
   };
 
   var onMouseUp = function (upEvt) {
@@ -63,7 +49,7 @@
 
     if (!window.activeStage) {
       window.initialStage(false);
-
+      map.addEventListener('click', popupClose);
       window.load(insertMapPins, window.errorMessage);
 
       window.activeStage = true;
@@ -87,6 +73,11 @@
         window.insertOffer(flats[target.getAttribute('data-number')]);
       }
     });
+  };
+  var popupClose = function (evt) {
+    if (evt.target.className === 'popup__close') {
+      map.removeChild(evt.target.parentNode);
+    }
   };
 
   window.errorMessage = function () {
