@@ -1,5 +1,6 @@
 'use strict';
 (function () {
+  var map = document.querySelector('.map');
   var createOneOffer = function (house) {
 
     var offer = house.offer;
@@ -48,9 +49,21 @@
 
   // вставка объявления
   window.insertOffer = function (currentOffer) {
-    var fragment = document.createDocumentFragment();
-    fragment.appendChild(createOneOffer(currentOffer));
+    var popup = map.querySelector('.popup');
+    var newCard = createOneOffer(currentOffer);
 
-    document.querySelector('.map').insertBefore(fragment, document.querySelector('.map__filters-container'));
+    if (!popup) {
+      var fragment = document.createDocumentFragment();
+      fragment.appendChild(newCard);
+      map.insertBefore(fragment, document.querySelector('.map__filters-container'));
+    } else {
+      map.replaceChild(newCard, popup);
+    }
+  };
+
+  window.closePopup = function (evt) {
+    if (evt.target.className === 'popup__close') {
+      map.removeChild(evt.target.parentNode);
+    }
   };
 })();

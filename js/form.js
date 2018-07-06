@@ -1,10 +1,12 @@
 'use strict';
 (function () {
   var MIN_GUESTS = 0;
+  var PINS_AMOUNT = 5;
   var startPoint = {
     X: 570,
     Y: 375};
 
+  var mapPins = document.querySelector('.map__pins');
   var map = document.querySelector('.map');
   var adForm = document.querySelector('.ad-form');
   var fieldsets = adForm.getElementsByTagName('fieldset');
@@ -22,7 +24,6 @@
     if (isDisabled) {
       adForm.classList.add('ad-form--disabled');
       map.classList.add('map--faded');
-
       window.activeStage = false;
 
       document.getElementById('address').value = startPoint.X + ', ' + startPoint.Y;
@@ -89,7 +90,21 @@
 
     adForm.addEventListener('reset', function () {
       window.initialStage(true);
+      delPins();
+
+      var popup = map.querySelector('.popup');
+      if (popup) {
+        map.removeChild(popup);
+      }
     });
+  };
+
+  var delPins = function () {
+    if (mapPins.children.length > PINS_AMOUNT) {
+      for (var i = 0; i < PINS_AMOUNT; i++) {
+        mapPins.removeChild(mapPins.lastChild);
+      }
+    }
   };
 
   var closeSuccess = function () {
