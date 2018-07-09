@@ -2,9 +2,10 @@
 (function () {
   var MIN_GUESTS = 0;
   var PINS_AMOUNT = 5;
-  var startPoint = {
+  var StartPoint = {
     X: 570,
     Y: 375};
+  var FlatPrices = {'flat': 1000, 'house': 5000, 'bungalo': 0, 'palace': 10000};
 
   var mapPins = document.querySelector('.map__pins');
   var map = document.querySelector('.map');
@@ -20,15 +21,15 @@
   var mapPin = document.querySelector('.map__pin--main');
 
   // Переключение состояний карты
-  window.initialStage = function (isDisabled) {
+  window.activateMap = function (isDisabled) {
     if (isDisabled) {
       adForm.classList.add('ad-form--disabled');
       map.classList.add('map--faded');
       window.activeStage = false;
 
-      document.getElementById('address').value = startPoint.X + ', ' + startPoint.Y;
-      mapPin.style.top = startPoint.Y + 'px';
-      mapPin.style.left = startPoint.X + 'px';
+      document.getElementById('address').value = StartPoint.X + ', ' + StartPoint.Y;
+      mapPin.style.top = StartPoint.Y + 'px';
+      mapPin.style.left = StartPoint.X + 'px';
     } else {
       adForm.classList.remove('ad-form--disabled');
       map.classList.remove('map--faded');
@@ -41,25 +42,11 @@
   };
 
   var openForm = function () {
-    // синхронизация цены и типа жилья
     houseType.addEventListener('change', function () {
-      switch (houseType.selectedIndex.value) {
-        case 'bungalo':
-          price.min = 0;
-          break;
-        case 'flat':
-          price.min = 1000;
-          break;
-        case 'house':
-          price.min = 5000;
-          break;
-        case 'palace':
-          price.min = 10000;
-          break;
-      }
+      price.min = FlatPrices[houseType.value];
+      price.placeholder = FlatPrices[houseType.value];
     });
 
-    // синхронизация заезда
     timein.addEventListener('change', function () {
       timeout.selectedIndex = timein.selectedIndex;
     });
