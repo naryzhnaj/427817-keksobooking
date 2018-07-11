@@ -2,6 +2,7 @@
 (function () {
   var FlatTypes = {'flat': 'Квартира', 'house': 'Дом', 'bungalo': 'Бунгало', 'palace': 'Дворец'};
   var map = document.querySelector('.map');
+
   var createOneOffer = function (house) {
 
     var offerTemplate = document.querySelector('template').content;
@@ -22,21 +23,27 @@
       allFeatures[i].className = 'popup__feature popup__feature--' + housefeature;
     });
 
-    var housePhotos = offer.photos;
     var photos = newOffer.querySelector('.popup__photos');
-    photos.firstElementChild.src = housePhotos[0];
-    for (var i = 1; i < housePhotos.length; i++) {
-      var newPicture = photos.firstElementChild.cloneNode(true);
-      newPicture.src = housePhotos[i];
-      photos.appendChild(newPicture);
-    }
+    offer.photos.forEach(function (photo) {
+      var newPhoto = document.createElement('img');
+      newPhoto.alt = 'Фотография жилья';
+      newPhoto.className = 'popup__photo';
+      newPhoto.width = 45;
+      newPhoto.height = 40;
+      newPhoto.src = photo;
+      photos.appendChild(newPhoto);
+    });
     return newOffer;
   };
 
   // вставка объявления
-  window.insertOffer = function (currentOffer) {
+  window.insertOffer = function (evt) {
+    var target = evt.target;
+    if (target.className !== 'map__pin') {
+      return;
+    }
     var popup = map.querySelector('.popup');
-    var newCard = createOneOffer(currentOffer);
+    var newCard = createOneOffer(window.flats[target.getAttribute('data-number')]);
 
     if (!popup) {
       var fragment = document.createDocumentFragment();
@@ -44,14 +51,17 @@
       map.insertBefore(fragment, document.querySelector('.map__filters-container'));
     } else {
       map.replaceChild(newCard, popup);
-      document.querySelector('.map__pin--active').classList.remove('map__pin--active');
+      map.querySelector('.map__pin--active').classList.remove('map__pin--active');
     }
+
+    target.classList.add('map__pin--active');
   };
 
-  window.closePopup = function (evt) {
-    if (evt.target.className === 'popup__close') {
-      map.removeChild(evt.target.parentNode);
-      document.querySelector('.map__pin--active').classList.remove('map__pin--active');
+  window.closePopup = function () {
+    var popup = map.querySelector('.popup');
+    if (popup) {
+      map.removeChild(popup);
+      map.querySelector('.map__pin--active').classList.remove('map__pin--active');
     }
   };
 })();

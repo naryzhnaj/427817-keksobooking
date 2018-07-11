@@ -1,11 +1,14 @@
 'use strict';
 (function () {
+  var PINS_AMOUNT = 5;
   var Pin = {
     IMAGE_RADIUS: 20,
     PIN_WIDTH: 50,
     PIN_HEIGHT: 70};
 
-  window.createOnePin = function (house) {
+  var mapPins = document.querySelector('.map__pins');
+
+  var createOnePin = function (house) {
     var newPin = document.createElement('button');
     newPin.className = 'map__pin';
     newPin.alt = house.offer.title;
@@ -20,5 +23,18 @@
 
     newPin.appendChild(newPinImg);
     return newPin;
+  };
+
+  window.insertMapPins = function () {
+    for (var i = 0; i < PINS_AMOUNT; i++) {
+      var pin = createOnePin(window.flats[i]);
+      pin.setAttribute('data-number', i);
+      mapPins.appendChild(pin);
+    }
+  };
+  window.deletePins = function () {
+    while (mapPins.children.length > 1) {
+      mapPins.removeChild(mapPins.lastChild);
+    }
   };
 })();
