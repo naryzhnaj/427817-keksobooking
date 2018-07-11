@@ -20,7 +20,7 @@
   var mapPin = document.querySelector('.map__pin--main');
 
   // Переключение состояний карты
-  window.activateMap = function (isDisabled) {
+  window.changeStage = function (isDisabled) {
     if (isDisabled) {
       adForm.classList.add('ad-form--disabled');
       map.classList.add('map--faded');
@@ -34,6 +34,7 @@
       map.classList.remove('map--faded');
       openForm();
     }
+
     for (var i = 0; i < fieldsets.length; i++) {
       fieldsets[i].disabled = isDisabled;
     }
@@ -53,23 +54,25 @@
 
   var isCapacityEnough = function () {
     var selectedRooms = rooms.value;
-    var selectedGuests = capacity.value;
+    var guests = capacity.value;
 
-    return ((selectedRooms < selectedGuests) || ((selectedGuests === MIN_GUESTS) && (selectedRooms > 0)));
+    return (((selectedRooms >= guests) && (guests > 0)) || ((guests === MIN_GUESTS) && (selectedRooms === MIN_GUESTS)));
   };
 
   rooms.addEventListener('change', function () {
-    if (isCapacityEnough()) {
+    if (!isCapacityEnough()) {
       rooms.setCustomValidity('Извините, число комнат должно соответствовать числу гостей');
     } else {
       rooms.setCustomValidity('');
+      capacity.setCustomValidity('');
     }
   });
 
   capacity.addEventListener('change', function () {
-    if (isCapacityEnough()) {
+    if (!isCapacityEnough()) {
       capacity.setCustomValidity('Извините, число комнат должно соответствовать числу гостей');
     } else {
+      rooms.setCustomValidity('');
       capacity.setCustomValidity('');
     }
   });
@@ -87,7 +90,7 @@
     });
 
     adForm.addEventListener('reset', function () {
-      window.activateMap(true);
+      window.changeStage(true);
       window.deletePins();
       window.closePopup();
       map.removeEventListener('click');
@@ -104,7 +107,7 @@
     if (evt.keyCode !== ESC_KEYCODE) {
       return;
     }
-    if (!window.activeStage) {
+    if (success.className === 'success') {
       closeSuccess();
     }
     window.closePopup();

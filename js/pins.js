@@ -1,6 +1,5 @@
 'use strict';
 (function () {
-  var PINS_AMOUNT = 5;
   var Pin = {
     IMAGE_RADIUS: 20,
     PIN_WIDTH: 50,
@@ -25,13 +24,14 @@
     return newPin;
   };
 
-  window.insertMapPins = function () {
-    for (var i = 0; i < PINS_AMOUNT; i++) {
-      var pin = createOnePin(window.flats[i]);
+  window.insertMapPins = function (houses) {
+    houses.forEach(function (house, i) {
+      var pin = createOnePin(house);
       pin.setAttribute('data-number', i);
       mapPins.appendChild(pin);
-    }
+    });
   };
+
   window.deletePins = function () {
     while (mapPins.children.length > 1) {
       mapPins.removeChild(mapPins.lastChild);

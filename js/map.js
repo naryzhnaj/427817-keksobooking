@@ -6,7 +6,6 @@
     HEIGHT: 70};
   var Range = {
     MIN_X: 0,
-    MAX_X: 1100,
     MIN_Y: 130 - PinSize.HEIGHT,
     MAX_Y: 630 - PinSize.HEIGHT};
 
@@ -14,8 +13,14 @@
   var mapPins = document.querySelector('.map__pins');
   var mainPin = document.querySelector('.map__pin--main');
   var address = document.getElementById('address');
+  var filters = document.querySelector('.map__filters');
+  var price = document.getElementById('housing-price');
+  var houseType = document.getElementById('housing-type');
+  var guests = document.getElementById('housing-guests');
+  var rooms = document.getElementById('housing-rooms');
+  var MAX_X = map.clientWidth - 2 * PinSize.RADIUS;
 
-  window.activateMap(true);
+  window.changeStage(true);
 
   mainPin.addEventListener('mousedown', function (evt) {
     evt.preventDefault();
@@ -42,8 +47,8 @@
       if (x < Range.MIN_X) {
         x = Range.MIN_X;
       }
-      if (x > Range.MAX_X) {
-        x = Range.MAX_X;
+      if (x > MAX_X) {
+        x = MAX_X;
       }
       if (y < Range.MIN_Y) {
         y = Range.MIN_Y;
@@ -62,9 +67,14 @@
       document.removeEventListener('mouseup', onMouseUp);
 
       if (!window.activeStage) {
-        window.activateMap(false);
-        window.load(insertMapPins, window.errorMessage);
-        map.addEventListener('click', window.closePopup);
+        window.changeStage(false);
+        loadOffers();//window.load(loadOffers, window.errorMessage);
+
+        map.addEventListener('click', function (moveEvt) {
+          if (moveEvt.target.className === 'popup__close') {
+            window.closePopup();
+          }
+        });
         window.activeStage = true;
       }
       address.value = (mainPin.offsetLeft + PinSize.RADIUS) + ', ' + (mainPin.offsetTop + PinSize.HEIGHT);
@@ -74,31 +84,37 @@
     document.addEventListener('mouseup', onMouseUp);
   });
 
-  // создать метки
-  var insertMapPins = function (flats) {
-    for (var i = 0; i < PINS_AMOUNT; i++) {
-      var pin = window.createOnePin(flats[i]);
-      pin.setAttribute('data-number', i);
-      mapPins.appendChild(pin);
-    }
+  var filterFlats = function () {
+    window.deletePins();
+    window.closePopup();
+    var houses = window.flats;
 
-    mapPins.addEventListener('click', function (evt) {
-      var target = evt.target;
-      if (target.className === 'map__pin') {
-        window.insertOffer(flats[target.getAttribute('data-number')]);
-        target.classList.add('map__pin--active');
+    houses.forEach(function (house) {
+      house.rating = 0;
+      if (house.offer.type === houseType.value) {
+        house.rating++;
+      }
+      if (house.offer.rooms === rooms.value) {
+        house.rating++;
+      }
+      if (house.offer.guests === guests.value) {
+        house.rating++;
       }
     });
+
+    houses.sort(function (a, b) {
+      return a.rating > b.rating;
+    });
+    window.insertMapPins(houses.slice(0, PINS_AMOUNT));
   };
 
-  window.errorMessage = function (errorMessage) {
-    var node = document.createElement('div');
-    node.style = 'z-index: 100; margin: 0 auto; text-align: center; background-color: yellow;';
-    node.style.position = 'absolute';
-    node.style.left = 0;
-    node.style.right = 0;
-    node.style.fontSize = '20px';
-    node.textContent = errorMessage;
-    document.body.insertAdjacentElement('afterbegin', node);
+  var loadOffers = function () {
+    var flats = window.createOffers();
+    window.insertMapPins(flats.slice(0, PINS_AMOUNT));
+    window.flats = flats;
+
+    filters.addEventListener('change', filterFlats);
+    mapPins.addEventListener('click', window.insertOffer);
+    document.addEventListener('keydown', window.isEscPressed);
   };
 })();
