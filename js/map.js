@@ -6,7 +6,7 @@
     RADIUS: 25,
     HEIGHT: 70};
   var Range = {
-    MIN_X: 0,
+    MIN_X: -PinSize.RADIUS,
     MIN_Y: 130 - PinSize.HEIGHT,
     MAX_Y: 630 - PinSize.HEIGHT};
 
@@ -19,7 +19,7 @@
   var houseType = document.getElementById('housing-type');
   var guests = document.getElementById('housing-guests');
   var rooms = document.getElementById('housing-rooms');
-  var MAX_X = map.clientWidth - 2 * PinSize.RADIUS;
+  var MAX_X = map.clientWidth - PinSize.RADIUS;
   var lastTimeout;
 
   window.changeStage(true);
@@ -134,8 +134,20 @@
       }, DEBOUNCE_INTERVAL);
     });
 
-    mapPins.addEventListener('click', window.insertOffer);
+    mapPins.addEventListener('click', function (evt) {
+      evt.preventDefault();
+      var target = evt.target;
+      if (target.className === 'map__pin') {
+        window.insertOffer(window.flats[target.getAttribute('data-number')]);
+
+        var activePin = mapPins.querySelector('.map__pin--active');
+        if (activePin) {
+          activePin.classList.remove('map__pin--active');
+        }
+        target.classList.add('map__pin--active');
+      }
+    });
+
     document.addEventListener('keydown', window.isEscPressed);
   };
-
 })();

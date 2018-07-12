@@ -39,10 +39,13 @@
       fieldsets[i].disabled = isDisabled;
     }
   };
-
   houseType.addEventListener('change', function () {
     price.min = FlatPrices[houseType.value];
     price.placeholder = FlatPrices[houseType.value];
+  });
+
+  price.addEventListener('change', function () {
+    price.min = FlatPrices[houseType.value];
   });
 
   timein.addEventListener('change', function () {
@@ -84,6 +87,7 @@
       window.upload(new FormData(adForm), function () {
         success.classList.remove('hidden');
         document.addEventListener('click', closeSuccess);
+        document.addEventListener('keydown', window.isEscPressed);
       }, window.errorMessage);
 
       adForm.reset();

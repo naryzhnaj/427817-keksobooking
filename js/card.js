@@ -37,25 +37,16 @@
   };
 
   // вставка объявления
-  window.insertOffer = function (evt) {
-    evt.preventDefault();
-    var target = evt.target;
-    if (target.className !== 'map__pin') {
-      return;
-    }
+  window.insertOffer = function (currentOffer) {
+    var newCard = createOneOffer(currentOffer);
     var popup = map.querySelector('.popup');
-    var newCard = createOneOffer(window.flats[target.getAttribute('data-number')]);
-
     if (!popup) {
       var fragment = document.createDocumentFragment();
       fragment.appendChild(newCard);
       map.insertBefore(fragment, document.querySelector('.map__filters-container'));
     } else {
       map.replaceChild(newCard, popup);
-      map.querySelector('.map__pin--active').classList.remove('map__pin--active');
     }
-
-    target.classList.add('map__pin--active');
   };
 
   window.closePopup = function () {
