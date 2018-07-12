@@ -33,7 +33,7 @@
   };
 
   window.deletePins = function () {
-    while (mapPins.children.length > 1) {
+    while (mapPins.children.length > 2) {
       mapPins.removeChild(mapPins.lastChild);
     }
   };

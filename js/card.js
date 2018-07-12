@@ -38,6 +38,7 @@
 
   // вставка объявления
   window.insertOffer = function (evt) {
+    evt.preventDefault();
     var target = evt.target;
     if (target.className !== 'map__pin') {
       return;

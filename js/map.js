@@ -1,6 +1,7 @@
 'use strict';
 (function () {
   var PINS_AMOUNT = 5;
+  var DEBOUNCE_INTERVAL = 500;
   var PinSize = {
     RADIUS: 25,
     HEIGHT: 70};
@@ -19,6 +20,7 @@
   var guests = document.getElementById('housing-guests');
   var rooms = document.getElementById('housing-rooms');
   var MAX_X = map.clientWidth - 2 * PinSize.RADIUS;
+  var lastTimeout;
 
   window.changeStage(true);
 
@@ -68,7 +70,7 @@
 
       if (!window.activeStage) {
         window.changeStage(false);
-        loadOffers();//window.load(loadOffers, window.errorMessage);
+        window.load(loadOffers, window.errorMessage);
 
         map.addEventListener('click', function (moveEvt) {
           if (moveEvt.target.className === 'popup__close') {
@@ -85,11 +87,9 @@
   });
 
   var filterFlats = function () {
-    window.deletePins();
     window.closePopup();
-    var houses = window.flats;
-
-    houses.forEach(function (house) {
+    window.deletePins();
+    window.flats.forEach(function (house) {
       house.rating = 0;
       if (house.offer.type === houseType.value) {
         house.rating++;
@@ -100,21 +100,42 @@
       if (house.offer.guests === guests.value) {
         house.rating++;
       }
+
+      if (((price.value === 'high') && (house.offer.price >= 50000)) ||
+       ((price.value === 'middle') && (house.offer.price > 10000) && (house.offer.price < 50000)) ||
+       ((price.value === 'low') && (house.offer.price <= 10000))) {
+        house.rating++;
+      }
+
+      house.offer.features.forEach(function (feature) {
+        if (document.getElementById('filter-' + feature).checked) {
+          house.rating++;
+        }
+      });
     });
 
-    houses.sort(function (a, b) {
-      return a.rating > b.rating;
+    window.flats.sort(function compareNumbers(a, b) {
+      return b.rating - a.rating;
     });
-    window.insertMapPins(houses.slice(0, PINS_AMOUNT));
+
+    window.insertMapPins(window.flats.slice(0, PINS_AMOUNT));
   };
 
-  var loadOffers = function () {
-    var flats = window.createOffers();
+  var loadOffers = function (flats) {
     window.insertMapPins(flats.slice(0, PINS_AMOUNT));
     window.flats = flats;
 
-    filters.addEventListener('change', filterFlats);
+    filters.addEventListener('change', function () {
+      if (lastTimeout) {
+        window.clearTimeout(lastTimeout);
+      }
+      lastTimeout = window.setTimeout(function () {
+        filterFlats();
+      }, DEBOUNCE_INTERVAL);
+    });
+
     mapPins.addEventListener('click', window.insertOffer);
     document.addEventListener('keydown', window.isEscPressed);
   };
+
 })();

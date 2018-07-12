@@ -91,9 +91,8 @@
 
     adForm.addEventListener('reset', function () {
       window.changeStage(true);
-      window.deletePins();
       window.closePopup();
-      map.removeEventListener('click');
+      window.deletePins();
     });
   };
 
