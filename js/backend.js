@@ -1,8 +1,11 @@
 'use strict';
+
 (function () {
-  // Отправка формы
+  var URL_UPLOAD = 'https://js.dump.academy/keksobooking';
+  var URL_ONLOAD = 'https://js.dump.academy/keksobooking/data';
+
+  // ф-ия, отправляющая данные из формы
   window.upload = function (data, onLoad, onError) {
-    var URL = 'https://js.dump.academy/keksobooking';
     var request = new XMLHttpRequest();
     request.responseType = 'json';
 
@@ -17,13 +20,12 @@
     request.addEventListener('error', function () {
       onError('Произошла ошибка соединения');
     });
-    request.open('POST', URL);
+    request.open('POST', URL_UPLOAD);
     request.send(data);
   };
 
-  // загрузка данных
+  // ф-ия, загружающая данные с сервера
   window.load = function (onLoad, onError) {
-    var URL = 'https://js.dump.academy/keksobooking/data';
     var request = new XMLHttpRequest();
     request.responseType = 'json';
 
@@ -39,10 +41,11 @@
       onError('Произошла ошибка соединения');
     });
 
-    request.open('GET', URL);
+    request.open('GET', URL_ONLOAD);
     request.send();
   };
 
+  // показать сообщение, если есть ошибки
   window.errorMessage = function (errorMessage) {
     var node = document.createElement('div');
     node.style = 'z-index: 100; margin: 0 auto; text-align: center; background-color: yellow;';

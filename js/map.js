@@ -1,10 +1,12 @@
 'use strict';
+
 (function () {
-  var PINS_AMOUNT = 5;
   var DEBOUNCE_INTERVAL = 500;
+  // размеры главной метки
   var PinSize = {
     RADIUS: 25,
     HEIGHT: 70};
+    // границы для главной метки
   var Range = {
     MIN_X: -PinSize.RADIUS,
     MIN_Y: 130 - PinSize.HEIGHT,
@@ -15,13 +17,16 @@
   var mainPin = document.querySelector('.map__pin--main');
   var address = document.getElementById('address');
   var filters = document.querySelector('.map__filters');
+
   var price = document.getElementById('housing-price');
   var houseType = document.getElementById('housing-type');
   var guests = document.getElementById('housing-guests');
   var rooms = document.getElementById('housing-rooms');
+
   var MAX_X = map.clientWidth - PinSize.RADIUS;
   var lastTimeout;
 
+  // перевод в первоначальное состояние
   window.changeStage(true);
 
   mainPin.addEventListener('mousedown', function (evt) {
@@ -86,6 +91,7 @@
     document.addEventListener('mouseup', onMouseUp);
   });
 
+  // фильтрация предложений
   var filterFlats = function () {
     window.closePopup();
     window.deletePins();
@@ -114,16 +120,31 @@
       });
     });
 
-    window.flats.sort(function compareNumbers(a, b) {
+    window.flats.sort(function (a, b) {
       return b.rating - a.rating;
     });
 
-    window.insertMapPins(window.flats.slice(0, PINS_AMOUNT));
+    window.insertMapPins();
   };
 
+  mapPins.addEventListener('click', function (evt) {
+    evt.stopPropagation();
+    var target = evt.target;
+    if (target.className === 'map__pin') {
+      window.insertOffer(target.getAttribute('data-number'));
+
+      var activePin = mapPins.querySelector('.map__pin--active');
+      if (activePin) {
+        activePin.classList.remove('map__pin--active');
+      }
+      target.classList.add('map__pin--active');
+    }
+  });
+
+  // загрузка и отрисовка меток
   var loadOffers = function (flats) {
-    window.insertMapPins(flats.slice(0, PINS_AMOUNT));
     window.flats = flats;
+    window.insertMapPins();
 
     filters.addEventListener('change', function () {
       if (lastTimeout) {
@@ -133,21 +154,5 @@
         filterFlats();
       }, DEBOUNCE_INTERVAL);
     });
-
-    mapPins.addEventListener('click', function (evt) {
-      evt.preventDefault();
-      var target = evt.target;
-      if (target.className === 'map__pin') {
-        window.insertOffer(window.flats[target.getAttribute('data-number')]);
-
-        var activePin = mapPins.querySelector('.map__pin--active');
-        if (activePin) {
-          activePin.classList.remove('map__pin--active');
-        }
-        target.classList.add('map__pin--active');
-      }
-    });
-
-    document.addEventListener('keydown', window.isEscPressed);
   };
 })();

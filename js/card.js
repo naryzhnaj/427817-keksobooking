@@ -1,10 +1,16 @@
 'use strict';
+
 (function () {
-  var FlatTypes = {'flat': 'Квартира', 'house': 'Дом', 'bungalo': 'Бунгало', 'palace': 'Дворец'};
+  var FlatTypes = {
+    'flat': 'Квартира',
+    'house': 'Дом',
+    'bungalo': 'Бунгало',
+    'palace': 'Дворец'};
+
   var map = document.querySelector('.map');
 
-  var createOneOffer = function (house) {
-
+  // создать и заполнить карточку
+  var createCard = function (house) {
     var offerTemplate = document.querySelector('template').content;
     var newOffer = offerTemplate.cloneNode(true);
     var offer = house.offer;
@@ -37,8 +43,8 @@
   };
 
   // вставка объявления
-  window.insertOffer = function (currentOffer) {
-    var newCard = createOneOffer(currentOffer);
+  window.insertOffer = function (offerNumber) {
+    var newCard = createCard(window.flats[offerNumber]);
     var popup = map.querySelector('.popup');
     if (!popup) {
       var fragment = document.createDocumentFragment();
@@ -49,6 +55,7 @@
     }
   };
 
+  // закрыть карточку
   window.closePopup = function () {
     var popup = map.querySelector('.popup');
     if (popup) {
