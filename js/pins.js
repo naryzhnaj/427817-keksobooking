@@ -30,7 +30,6 @@
 
   // создать метки для всех объявлений
   window.insertMapPins = function () {
-    //var houses = ;
     window.flats.slice(0, PINS_AMOUNT).forEach(function (house, i) {
       var pin = createOnePin(house);
       pin.setAttribute('data-number', i);

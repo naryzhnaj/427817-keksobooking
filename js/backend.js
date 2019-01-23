@@ -1,8 +1,9 @@
 'use strict';
 
 (function () {
-  var URL_UPLOAD = 'https://js.dump.academy/keksobooking';
-  var URL_ONLOAD = 'https://js.dump.academy/keksobooking/data';
+  var Url = {
+    UPLOAD: 'https://js.dump.academy/keksobooking',
+    ONLOAD: 'https://js.dump.academy/keksobooking/data'};
 
   // ф-ия, отправляющая данные из формы
   window.upload = function (data, onLoad, onError) {
@@ -20,7 +21,7 @@
     request.addEventListener('error', function () {
       onError('Произошла ошибка соединения');
     });
-    request.open('POST', URL_UPLOAD);
+    request.open('POST', Url.UPLOAD);
     request.send(data);
   };
 
@@ -41,7 +42,7 @@
       onError('Произошла ошибка соединения');
     });
 
-    request.open('GET', URL_ONLOAD);
+    request.open('GET', Url.ONLOAD);
     request.send();
   };
 

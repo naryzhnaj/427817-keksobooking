@@ -10,14 +10,14 @@
   var map = document.querySelector('.map');
 
   // создать и заполнить карточку
-  var createCard = function (house) {
+  var createCard = function (num) {
     var offerTemplate = document.querySelector('template').content;
     var newOffer = offerTemplate.cloneNode(true);
-    var offer = house.offer;
+    var offer = window.flats[num].offer;
 
     newOffer.querySelector('.popup__title').textContent = offer.title;
     newOffer.querySelector('.popup__text--address').textContent = offer.address;
-    newOffer.querySelector('.popup__avatar').src = house.author.avatar;
+    newOffer.querySelector('.popup__avatar').src = window.flats[num].author.avatar;
     newOffer.querySelector('.popup__text--price').textContent = offer.price + String.fromCharCode(0x20bd) + '/ночь';
     newOffer.querySelector('.popup__type').textContent = FlatTypes[offer.type];
     newOffer.querySelector('.popup__text--capacity').textContent = offer.rooms + ' комнаты для ' + offer.guests + ' гостей.';
@@ -44,7 +44,7 @@
 
   // вставка объявления
   window.insertOffer = function (offerNumber) {
-    var newCard = createCard(window.flats[offerNumber]);
+    var newCard = createCard(offerNumber);
     var popup = map.querySelector('.popup');
     if (!popup) {
       var fragment = document.createDocumentFragment();

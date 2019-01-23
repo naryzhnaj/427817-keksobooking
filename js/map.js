@@ -13,15 +13,9 @@
     MAX_Y: 630 - PinSize.HEIGHT};
 
   var map = document.querySelector('.map');
-  var mapPins = document.querySelector('.map__pins');
   var mainPin = document.querySelector('.map__pin--main');
   var address = document.getElementById('address');
   var filters = document.querySelector('.map__filters');
-
-  var price = document.getElementById('housing-price');
-  var houseType = document.getElementById('housing-type');
-  var guests = document.getElementById('housing-guests');
-  var rooms = document.getElementById('housing-rooms');
 
   var MAX_X = map.clientWidth - PinSize.RADIUS;
   var lastTimeout;
@@ -76,12 +70,6 @@
       if (!window.activeStage) {
         window.changeStage(false);
         window.load(loadOffers, window.errorMessage);
-
-        map.addEventListener('click', function (moveEvt) {
-          if (moveEvt.target.className === 'popup__close') {
-            window.closePopup();
-          }
-        });
         window.activeStage = true;
       }
       address.value = (mainPin.offsetLeft + PinSize.RADIUS) + ', ' + (mainPin.offsetTop + PinSize.HEIGHT);
@@ -91,49 +79,17 @@
     document.addEventListener('mouseup', onMouseUp);
   });
 
-  // фильтрация предложений
-  var filterFlats = function () {
-    window.closePopup();
-    window.deletePins();
-    window.flats.forEach(function (house) {
-      house.rating = 0;
-      if (house.offer.type === houseType.value) {
-        house.rating++;
-      }
-      if (house.offer.rooms === rooms.value) {
-        house.rating++;
-      }
-      if (house.offer.guests === guests.value) {
-        house.rating++;
-      }
-
-      if (((price.value === 'high') && (house.offer.price >= 50000)) ||
-       ((price.value === 'middle') && (house.offer.price > 10000) && (house.offer.price < 50000)) ||
-       ((price.value === 'low') && (house.offer.price <= 10000))) {
-        house.rating++;
-      }
-
-      house.offer.features.forEach(function (feature) {
-        if (document.getElementById('filter-' + feature).checked) {
-          house.rating++;
-        }
-      });
-    });
-
-    window.flats.sort(function (a, b) {
-      return b.rating - a.rating;
-    });
-
-    window.insertMapPins();
-  };
-
-  mapPins.addEventListener('click', function (evt) {
-    evt.stopPropagation();
+  map.addEventListener('click', function (evt) {
     var target = evt.target;
-    if (target.className === 'map__pin') {
-      window.insertOffer(target.getAttribute('data-number'));
+//evt.preventDefault();
+    if (target.className === 'popup__close') {
+      window.closePopup();
+    }
 
-      var activePin = mapPins.querySelector('.map__pin--active');
+    if (target.className === 'map__pin') {
+      window.insertOffer(1 * target.getAttribute('data-number'));
+
+      var activePin = map.querySelector('.map__pin--active');
       if (activePin) {
         activePin.classList.remove('map__pin--active');
       }
@@ -151,7 +107,7 @@
         window.clearTimeout(lastTimeout);
       }
       lastTimeout = window.setTimeout(function () {
-        filterFlats();
+        window.filterFlats();
       }, DEBOUNCE_INTERVAL);
     });
   };
