@@ -9,7 +9,13 @@
 
   var map = document.querySelector('.map');
 
-  // создать и заполнить карточку
+  /**
+   * @description создать и заполнить карточку
+   *
+   * @param {int} num номер объявления
+   *
+   * @return {DOM-элемент} newOffer карточка
+   */
   var createCard = function (num) {
     var offerTemplate = document.querySelector('template').content;
     var newOffer = offerTemplate.cloneNode(true);
@@ -39,13 +45,19 @@
       newPhoto.src = photo;
       photos.appendChild(newPhoto);
     });
+
     return newOffer;
   };
 
-  // вставка объявления
+  /**
+   * @description вставка объявления
+   *
+   * @param {int} offerNumber номер объявления
+   */
   window.insertOffer = function (offerNumber) {
     var newCard = createCard(offerNumber);
     var popup = map.querySelector('.popup');
+
     if (!popup) {
       var fragment = document.createDocumentFragment();
       fragment.appendChild(newCard);
@@ -55,7 +67,9 @@
     }
   };
 
-  // закрыть карточку
+  /**
+   * @description закрыть карточку
+   */
   window.closePopup = function () {
     var popup = map.querySelector('.popup');
     if (popup) {

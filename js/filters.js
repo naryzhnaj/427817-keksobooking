@@ -10,7 +10,9 @@
   var guests = document.getElementById('housing-guests');
   var rooms = document.getElementById('housing-rooms');
 
-  // фильтрация предложений
+  /**
+   * @description фильтрация предложений
+   */
   window.filterFlats = function () {
     window.closePopup();
     window.deletePins();

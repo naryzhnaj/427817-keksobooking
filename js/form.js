@@ -26,6 +26,7 @@
   var houseType = document.getElementById('type');
   var price = document.getElementById('price');
 
+  // проверка вместительности дома
   var checkCapacity = function () {
     if (!isCapacityEnough()) {
       capacity.setCustomValidity('Извините, число комнат должно соответствовать числу гостей');
@@ -35,6 +36,7 @@
     }
   };
 
+  // достаточно ли гостям комнат
   var isCapacityEnough = function () {
     var selectedRooms = rooms.value;
     var guests = capacity.value;
@@ -42,23 +44,37 @@
     return (((selectedRooms >= guests) && (guests > 0)) || ((guests === MIN_GUESTS) && (selectedRooms === MIN_GUESTS)));
   };
 
+  // закрыть сообщение об успешной отправке
   var closeSuccess = function () {
     success.classList.add('hidden');
     adForm.reset();
     document.removeEventListener('click', closeSuccess);
   };
 
+  /**
+     * @description обработка нажатия Esc
+     *
+     * @param {event} evt
+     *
+   */
   window.isEscPressed = function (evt) {
     if (evt.keyCode !== ESC_KEYCODE) {
       return;
     }
+
     if (success.className === 'success') {
       closeSuccess();
     }
+
     window.closePopup();
   };
 
-  // Переключение состояний карты
+  /**
+     * @description Переключение состояний карты, блокировка/разблокировка формы
+     *
+     * @param {bool} isDisabled состояние формы и карты
+     *
+     */
   window.changeStage = function (isDisabled) {
     if (isDisabled) {
       adForm.classList.add('ad-form--disabled');
@@ -100,6 +116,7 @@
 
   capacity.addEventListener('change', checkCapacity);
 
+  // отправляем данные формы
   adForm.addEventListener('submit', function (evt) {
     evt.preventDefault();
 
@@ -109,6 +126,7 @@
     }, window.errorMessage);
   });
 
+  // очистка формы и карты
   adForm.addEventListener('reset', function () {
     window.changeStage(true);
     document.removeEventListener('keydown', window.isEscPressed);
