@@ -1,17 +1,29 @@
 'use strict';
+
 (function () {
-  var FlatTypes = {'flat': 'Квартира', 'house': 'Дом', 'bungalo': 'Бунгало', 'palace': 'Дворец'};
+  var FlatTypes = {
+    'flat': 'Квартира',
+    'house': 'Дом',
+    'bungalo': 'Бунгало',
+    'palace': 'Дворец'};
+
   var map = document.querySelector('.map');
 
-  var createOneOffer = function (house) {
-
+  /**
+   * @description создать и заполнить карточку
+   *
+   * @param {int} num номер объявления
+   *
+   * @return {DOM-элемент} newOffer карточка
+   */
+  var createCard = function (num) {
     var offerTemplate = document.querySelector('template').content;
     var newOffer = offerTemplate.cloneNode(true);
-    var offer = house.offer;
+    var offer = window.flats[num].offer;
 
     newOffer.querySelector('.popup__title').textContent = offer.title;
     newOffer.querySelector('.popup__text--address').textContent = offer.address;
-    newOffer.querySelector('.popup__avatar').src = house.author.avatar;
+    newOffer.querySelector('.popup__avatar').src = window.flats[num].author.avatar;
     newOffer.querySelector('.popup__text--price').textContent = offer.price + String.fromCharCode(0x20bd) + '/ночь';
     newOffer.querySelector('.popup__type').textContent = FlatTypes[offer.type];
     newOffer.querySelector('.popup__text--capacity').textContent = offer.rooms + ' комнаты для ' + offer.guests + ' гостей.';
@@ -33,18 +45,18 @@
       newPhoto.src = photo;
       photos.appendChild(newPhoto);
     });
+
     return newOffer;
   };
 
-  // вставка объявления
-  window.insertOffer = function (evt) {
-    evt.preventDefault();
-    var target = evt.target;
-    if (target.className !== 'map__pin') {
-      return;
-    }
+  /**
+   * @description вставка объявления
+   *
+   * @param {int} offerNumber номер объявления
+   */
+  window.insertOffer = function (offerNumber) {
+    var newCard = createCard(offerNumber);
     var popup = map.querySelector('.popup');
-    var newCard = createOneOffer(window.flats[target.getAttribute('data-number')]);
 
     if (!popup) {
       var fragment = document.createDocumentFragment();
@@ -52,12 +64,12 @@
       map.insertBefore(fragment, document.querySelector('.map__filters-container'));
     } else {
       map.replaceChild(newCard, popup);
-      map.querySelector('.map__pin--active').classList.remove('map__pin--active');
     }
-
-    target.classList.add('map__pin--active');
   };
 
+  /**
+   * @description закрыть карточку
+   */
   window.closePopup = function () {
     var popup = map.querySelector('.popup');
     if (popup) {
