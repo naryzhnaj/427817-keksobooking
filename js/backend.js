@@ -5,7 +5,13 @@
     UPLOAD: 'https://js.dump.academy/keksobooking',
     ONLOAD: 'https://js.dump.academy/keksobooking/data'};
 
-  // ф-ия, отправляющая данные из формы
+  /**
+   * @description отправление данных формы
+   *
+   * @param {FormData} data данные формы
+   * @param {Function} onLoad callback, если успешно
+   * @param {Function} onError callback, если ошибки
+   */
   window.upload = function (data, onLoad, onError) {
     var request = new XMLHttpRequest();
     request.responseType = 'json';
@@ -25,7 +31,12 @@
     request.send(data);
   };
 
-  // ф-ия, загружающая данные с сервера
+  /**
+   * @description загрузка данных с сервера
+   *
+   * @param {Function} onLoad callback, если успешно
+   * @param {Function} onError callback, если ошибки
+   */
   window.load = function (onLoad, onError) {
     var request = new XMLHttpRequest();
     request.responseType = 'json';
@@ -46,7 +57,11 @@
     request.send();
   };
 
-  // показать сообщение, если есть ошибки
+  /**
+   * @description показать сообщение, если есть ошибки
+   *
+   * @param {String} errorMessage текст сообщения
+   */
   window.errorMessage = function (errorMessage) {
     var node = document.createElement('div');
     node.style = 'z-index: 100; margin: 0 auto; text-align: center; background-color: yellow;';
