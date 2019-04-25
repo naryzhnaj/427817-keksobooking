@@ -42,7 +42,9 @@
 
     if (target.className === 'popup__close') {
       window.closePopup();
-    } else if (target.className === 'map__pin') {
+    } else if (target.parentNode.className === 'map__pin' || target.className === 'map__pin') {
+      if (target.tagName === 'IMG') target = target.parentNode;
+
       var activePin = map.querySelector('.map__pin--active');
       if (activePin) {
         activePin.classList.remove('map__pin--active');

@@ -5,8 +5,13 @@
     'flat': 'Квартира',
     'house': 'Дом',
     'bungalo': 'Бунгало',
-    'palace': 'Дворец'};
-
+    'palace': 'Дворец'
+  };
+  var Image = {
+    WIDTH: 45,
+    HEIGHT: 40
+  };
+  var RUBLE = String.fromCharCode(0x20bd);
   var map = document.querySelector('.map');
 
   /**
@@ -16,15 +21,15 @@
    *
    * @return {DOM-элемент} newOffer карточка
    */
-  var createCard = function (num) {
+  var createCard = function (house) {
     var offerTemplate = document.querySelector('template').content;
     var newOffer = offerTemplate.cloneNode(true);
-    var offer = window.flats[num].offer;
 
+    var offer = house.offer;
     newOffer.querySelector('.popup__title').textContent = offer.title;
     newOffer.querySelector('.popup__text--address').textContent = offer.address;
-    newOffer.querySelector('.popup__avatar').src = window.flats[num].author.avatar;
-    newOffer.querySelector('.popup__text--price').textContent = offer.price + String.fromCharCode(0x20bd) + '/ночь';
+    newOffer.querySelector('.popup__avatar').src = house.author.avatar;
+    newOffer.querySelector('.popup__text--price').textContent = offer.price + RUBLE + '/ночь';
     newOffer.querySelector('.popup__type').textContent = FlatTypes[offer.type];
     newOffer.querySelector('.popup__text--capacity').textContent = offer.rooms + ' комнаты для ' + offer.guests + ' гостей.';
     newOffer.querySelector('.popup__text--time').textContent = 'Заезд после' + offer.checkin + ', выезд до ' + offer.checkout;
@@ -40,8 +45,8 @@
       var newPhoto = document.createElement('img');
       newPhoto.alt = 'Фотография жилья';
       newPhoto.className = 'popup__photo';
-      newPhoto.width = 45;
-      newPhoto.height = 40;
+      newPhoto.width = Image.WIDTH;
+      newPhoto.height = Image.HEIGHT;
       newPhoto.src = photo;
       photos.appendChild(newPhoto);
     });
@@ -55,13 +60,11 @@
    * @param {int} offerNumber номер объявления
    */
   window.insertOffer = function (offerNumber) {
-    var newCard = createCard(offerNumber);
+    var newCard = createCard(window.flats[offerNumber]);
     var popup = map.querySelector('.popup');
 
     if (!popup) {
-      var fragment = document.createDocumentFragment();
-      fragment.appendChild(newCard);
-      map.insertBefore(fragment, document.querySelector('.map__filters-container'));
+      map.insertBefore(newCard, document.querySelector('.map__filters-container'));
     } else {
       map.replaceChild(newCard, popup);
     }

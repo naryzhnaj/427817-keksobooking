@@ -40,20 +40,22 @@
    * @description создать метки для всех объявлений
    */
   window.insertMapPins = function () {
+    var fragment = document.createDocumentFragment();
     window.flats.slice(0, PINS_AMOUNT).forEach(function (house, i) {
       var pin = createOnePin(house);
       pin.setAttribute('data-number', i);
-      mapPins.appendChild(pin);
+      fragment.appendChild(pin);
     });
+    mapPins.appendChild(fragment);
   };
 
   /**
    * @description удалить с карты все метки объявлений
   */
   window.deletePins = function () {
-    var pins = mapPins.querySelectorAll('.map__pin:not(.map__pin--main)');
-    for (var i = 0; i < pins.length; i++) {
-      pins[i].remove();
-    }
+    var pins = Array.from(mapPins.querySelectorAll('.map__pin:not(.map__pin--main)'));
+    pins.forEach(function(pin) {
+      pin.remove();
+    });
   };
 })();

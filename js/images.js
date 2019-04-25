@@ -1,6 +1,7 @@
 'use strict';
 
 (function () {
+  var IMAGE_SIZE = 70;
   // допустимые типы изображений
   var FILE_TYPE_REGEXP = /\.(gif|jpg|jpeg|png)$/i;
 
@@ -64,8 +65,8 @@
     var newPhoto = document.createElement('div');
     newPhoto.classList.add('ad-form__photo');
     var newImage = document.createElement('img');
-    newImage.width = 70;
-    newImage.height = 70;
+    newImage.width = IMAGE_SIZE;
+    newImage.height = IMAGE_SIZE;
     newPhoto.appendChild(newImage);
     imagesContainer.appendChild(newPhoto);
 
